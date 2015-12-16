@@ -32,10 +32,12 @@
 <body>
 <?php 
 //	$milc=$b2=$b3=$b4=$b5="";
-	if($_SERVER['REQUEST_METHOD']=="GET"){
+$flag = "";
+//if($_SERVER['REQUEST_METHOD']=="GET"){
 	//	exec("sudo sh WEB-INF/redo_unc.sh");
 //		exec("sudo sh WEB-INF/setup_unc.sh");
-	}else if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; initate and clear registers should place here!!!
+//}else 
+if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; initate and clear registers should place here!!!
 	//before start another bechmark...
 	//	exec("sudo sh WEB-INF/redo_unc.sh");
 /*		if(!empty($_POST["bench1"])){
@@ -53,7 +55,7 @@
 		if(!empty($_POST["bench5"])){
 			$b5 = "checked";
 		}
-*/
+*/		if($_POST["bench1"] != '0'){
 		switch($_POST["bench1"]){
                         case '1': $param="1.milc";$milc=1; break;
                         case '2': $param="2.milc";$milc=2; break;
@@ -64,6 +66,9 @@
                         case '7': $param="7.milc";$milc=7; break;
                         case '8': $param="8.milc";$milc=8; break;
                 }
+		$flag = $flag . '1';
+	}
+		if($_POST["bench2"] != '0'){
                 switch($_POST["bench2"]){
                         case '1': $param .=" 1.blic"; $blic=1;break;
                         case '2': $param .=" 2.astar"; break;
@@ -74,9 +79,11 @@
                         case '7': $param .=" 7.astar"; break;
                         case '8': $param .=" 8.astar"; break;
                 }
+		$flag = $flag . "2";
+	}
 
 	//	exec("sudo sh WEB-INF/setup_unc.sh");
-	}
+}
 ?>
 <header id="header">
 	<hgroup>
@@ -92,7 +99,7 @@
 <article class="module width_full">
 <header><h3>Memory-Intense Access Bencmarks</h3></header>
 <div style="display" class="module_content">
-	<form id="benchform" name="benchform" action="show.php" method="get">
+	<form id="benchform" name="benchform" action="show.php" method="post">
 		<table cellspacing="0" class="tablesorter" border="0">
 			<thead>
 				<tr>
@@ -102,7 +109,7 @@
 					<th>Bench3</th>
 					<th>Bench4</th>
 					<th>Bench5</th>
-					<th colspan="2"><input type="submit" value="Reset" onclick="clearBench()"/></th>
+					<th colspan="2"><input type="submit" value="Clear" onclick="clearBench()"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -142,7 +149,6 @@
 </article>
 <div class="clear"></div>
 
-
 <article class="module width_full">
 <header><h3>Performance evaluation </h3></header>
 <div style="display" class="module_content">
@@ -167,6 +173,7 @@
 </footer>
 </article>
 </section>
+<input type="hidden" id='flag' value="<?php echo $flag;?>"/>
 </body>
 </html>
 <script type="text/javascript">
@@ -256,19 +263,20 @@ $(document).ready(function(){
 //	update = setInterval(updateData, 2000);
 });
 function clearBench(){
-	var param = '';
+/*	var param = '';
 	$('select.choice').each(function(){
 		if($(this).val()!=0)
 			param += $(this).attr('name')[5];	
-	});
-	if(param != ''){
+	});*/
+	if($('#flag').val()!=''){
 	$.ajax({url:"per1.php",
 		type:"POST",
-		data:{clear:param},
+		data:{clear:$('#flag').val()},
 		dataType:"json"
 	});
-	$('select.choice').each(function(){$(this).val(0)});
+	$('#flag').val('');
 	}
+	$('select.choice').each(function(){$(this).val(0)});
 }
 /*window.onbeforeunload=clearBench();
 window.onload = function(){

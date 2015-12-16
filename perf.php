@@ -12,15 +12,18 @@
 //echo passthru("ls");
 //echo "<br>";
 if($_SERVER['REQUEST_METHOD']=="GET"){
-$str = shell_exec("sudo sh WEB-INF/unc_read.sh 2>&1");
-$latency = explode("\n",$str);
-$str = shell_exec("sh WEB-INF/mem.sh");
-$mem = explode(" ",$str);
-echo "{\"latency\":[".current($latency).",".next($latency).",".current($mem).",".next($mem)."]}";
+	$str = shell_exec("sudo sh WEB-INF/unc_read.sh");
+	$latency = explode("\n",$str);
+	$str = shell_exec("sh WEB-INF/mem.sh");
+	$mem = explode(" ",$str);
+	echo "{\"latency\":[".current($latency).",".next($latency).",".current($mem).",".next($mem)."]}";
 }else if($_SERVER['REQUEST_METHOD']=="POST"){
-exec("sudo sh WEB-INF/redo_unc.sh");
-if($_POST['benchs']!='')
-	exec("");
+	if(!empty($_POST['sid']))
+		exec("sudo sh WEB-INF/setup_unc.sh");
+	else if(!empty($_POST['clear'])){
+		//exec("sudo sh WEB-INF/redo_unc.sh");
+		exec("sudo sh WEN-INF/clear_bench.sh ".$_POST['clear']);
+	}
 }
 //echo "</p2>"
 //echo "latency:[" + .latency[0] +", \""+ 
