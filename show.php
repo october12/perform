@@ -92,7 +92,7 @@
 <article class="module width_full">
 <header><h3>Memory-Intense Access Bencmarks</h3></header>
 <div style="display" class="module_content">
-	<form id="benchform" name="benchform" action="show.php" method="post">
+	<form id="benchform" name="benchform" action="show.php" method="get">
 		<table cellspacing="0" class="tablesorter" border="0">
 			<thead>
 				<tr>
@@ -102,22 +102,32 @@
 					<th>Bench3</th>
 					<th>Bench4</th>
 					<th>Bench5</th>
-					<th colspan="2"><input type="submit" value="Reset" onclick="$('select').each(function(){$(this).val(0)});"/></th>
+					<th colspan="2"><input type="submit" value="Reset" onclick="clearBench()"/></th>
 				</tr>
 			</thead>
 			<tbody>
 			<tr id="benchs">
 			<td>Choice</td>
-			<td><select name="bench1" id='bench1'><?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
-                        else echo "<option value='".$i."'>".$i."</option>";}?></td>
-			<td><select name="bench2"><?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
-                        else echo "<option value='".$i."'>".$i."</option>";}?></td>
-			<td><select name="bench3"><?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
-                        else echo "<option value='".$i."'>".$i."</option>";}?></td>
-			<td><select name="bench4"><?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
-                        else echo "<option value='".$i."'>".$i."</option>";}?></td>
-			<td><select name="bench5"><?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
-                        else echo "<option value='".$i."'>".$i."</option>";}?></td>
+			<td><select name="bench1" class="choice">
+				<?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
+                   		else echo "<option value='".$i."'>".$i."</option>";}?>
+			</td>
+			<td><select name="bench2" class="choice">
+				<?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
+                        	else echo "<option value='".$i."'>".$i."</option>";}?>
+			</td>
+			<td><select name="bench3" class="choice">
+				<?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
+                        	else echo "<option value='".$i."'>".$i."</option>";}?>
+			</td>
+			<td><select name="bench4" class="choice">
+				<?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
+                        	else echo "<option value='".$i."'>".$i."</option>";}?>
+			</td>
+			<td><select name="bench5" class="choice">
+				<?php for($i=0; $i<9; $i++){if($i==$milc)echo "<option value='".$i."' selected='selected'>".$i."</option>";
+                        	else echo "<option value='".$i."'>".$i."</option>";}?>
+			</td>
 			<td><input type="submit" class="alt_btn" name="launch" value="Launch" onclick="return chooseBench()"/></td>
 <!--			<td><label>benchmark2<input name="bench2" type="checkbox" value="3"  <?php echo $b2;?>/></label></td>
 			<td><label>benchmark3<input name="bench3" type="checkbox" value="5"  <?php echo $b3;?>/></label></td>
@@ -164,13 +174,10 @@ var update = null;
 var chart1, chart2;
 var skt0 = [null,null,null,null,null,null,null];
 var skt1 = [null,null,null,null,null,null,null];
+var mem0 = [null,null,null,null,null,null,null];
+var mem1 = [null,null,null,null,null,null,null];
 var times = 0;
 var num = 7;
-Chart.defaults.global.animation=false;
-Chart.defaults.global.scaleOverride = true;
-Chart.defaults.global.scaleSteps = 10;
-Chart.defaults.global.scaleStepWidth = 40;
-Chart.defaults.global.scaleStartValue = 0;
 
 function stopUpdate(){
 	clearInterval(update);
@@ -188,12 +195,17 @@ function updateData(){
 			times=times%num;
 			skt0[times] = data.latency[0];
 			skt1[times] = data.latency[1];
+			mem0[times] = data.latency[2];
+			mem1[times] = data.latency[3];
 			for(var j=times, i=0; i<num; i++,--j){
 				if(skt0[(j+num)%num] == null) break;
 				chart1.datasets[0].points[i].value = skt0[(j+num)%num];
 				chart1.datasets[1].points[i].value = skt1[(j+num)%num];
+				chart2.datasets[0].points[i].value = mem0[(j+num)%num];
+				chart2.datasets[1].points[i].value = mem1[(j+num)%num];
 			}
 			chart1.update();
+			chart2.update();
 			times++;
 		},
 		error: function (request, texts, error){
@@ -227,21 +239,58 @@ $(document).ready(function(){
         }
     ]
 };
+	Chart.defaults.global.animation=false;
+	Chart.defaults.global.scaleOverride = true;
+	Chart.defaults.global.scaleSteps = 10;
+	Chart.defaults.global.scaleStepWidth = 40;
+	Chart.defaults.global.scaleStartValue = 0;
 	var options = {scaleGridLineWidth: 1,
 		scaleGridLineColor: "rgba(0,0,0,0.1)"	
 	};
 	var ctx = document.getElementById("chart1").getContext("2d");
 	chart1 = new Chart(ctx).Line(data, options);
+	Chart.defaults.global.scaleSteps = 10;
+	Chart.defaults.global.scaleStepWidth = 1;
 	ctx = document.getElementById("chart2").getContext("2d");
 	chart2 = new Chart(ctx).Line(data, options);
 //	update = setInterval(updateData, 2000);
 });
-/*window.onbeforeunload=function(){
-	$.ajax({url:"perf.php",
+function clearBench(){
+	var param = '';
+	$('select.choice').each(function(){
+		if($(this).val()!=0)
+			param += $(this).attr('name')[5];	
+	});
+	if(param != ''){
+	$.ajax({url:"per1.php",
 		type:"POST",
+		data:{clear:param},
 		dataType:"json"
 	});
-};*/
+	$('select.choice').each(function(){$(this).val(0)});
+	}
+}
+/*window.onbeforeunload=clearBench();
+window.onload = function(){
+	var xmlhttp = null;
+	try{
+		xmlhttp = new XMLHttpRequest();
+	}catch(e){
+		try{xmlhttp = new ActiveXObeject("Msxml2.XMLHTTP");
+		}catch(e){
+		xmlhttp = new ActiveXObeject("Microsoft.XMLHTTP");
+		}
+	}
+	if(xmlhttp == null){
+		alert('Browser does not support HTTP request');
+		return;
+	}
+	var url = "perf.php"
+	url = url + "?sid=" + Math.random();
+	xmlhttp.open("POST", "perf.php", true);
+	xmlhttp.send(null);
+}
+*/
 function chooseBench(){
 	var count = 0;
 	var benchs = $('#benchs').children();
