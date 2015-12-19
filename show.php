@@ -9,11 +9,11 @@
 }
 #chart2{
 	float: left;
-	padding:25px;
+	padding:1px;
 }
 #chart1{
 	float: left;
-	padding:25px;
+	padding:1px;
 }
 </style>
 <script src="js/jquery-2.1.4.js" type="text/javascript"></script>
@@ -31,31 +31,9 @@
 </head>
 <body>
 <?php 
-//	$milc=$b2=$b3=$b4=$b5="";
 $flag = "";
-//if($_SERVER['REQUEST_METHOD']=="GET"){
-	//	exec("sudo sh WEB-INF/redo_unc.sh");
-//		exec("sudo sh WEB-INF/setup_unc.sh");
-//}else 
-if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; initate and clear registers should place here!!!
-	//before start another bechmark...
-	//	exec("sudo sh WEB-INF/redo_unc.sh");
-/*		if(!empty($_POST["bench1"])){
-			$b1 = "checked";
-		}
-		if(!empty($_POST["bench2"])){
-			$b2 = "checked";
-		}
-		if(!empty($_POST["bench3"])){
-			$b3 = "checked";
-		}
-		if(!empty($_POST["bench4"])){
-			$b4 = "checked";
-		}
-		if(!empty($_POST["bench5"])){
-			$b5 = "checked";
-		}
-*/		if($_POST["bench1"] != '0'){
+if($_SERVER['REQUEST_METHOD']=="POST"){
+	if($_POST["bench1"] != '0'){
 		switch($_POST["bench1"]){
                         case '1': $param="1.milc";$milc=1; break;
                         case '2': $param="2.milc";$milc=2; break;
@@ -68,7 +46,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; init
                 }
 		$flag = $flag . '1';
 	}
-		if($_POST["bench2"] != '0'){
+	if($_POST["bench2"] != '0'){
                 switch($_POST["bench2"]){
                         case '1': $param .=" 1.blic"; $blic=1;break;
                         case '2': $param .=" 2.astar"; break;
@@ -82,7 +60,6 @@ if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; init
 		$flag = $flag . "2";
 	}
 
-	//	exec("sudo sh WEB-INF/setup_unc.sh");
 }
 ?>
 <header id="header">
@@ -136,11 +113,6 @@ if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; init
                         	else echo "<option value='".$i."'>".$i."</option>";}?>
 			</td>
 			<td><input type="submit" class="alt_btn" name="launch" value="Launch" onclick="return chooseBench()"/></td>
-<!--			<td><label>benchmark2<input name="bench2" type="checkbox" value="3"  <?php echo $b2;?>/></label></td>
-			<td><label>benchmark3<input name="bench3" type="checkbox" value="5"  <?php echo $b3;?>/></label></td>
-			<td><label>benchmark4<input name="bench4" type="checkbox" value="7"  <?php echo $b4;?>/></label></td>
-			<td><label>benchmark5<input name="bench5" type="checkbox" value="9"  <?php echo $b5;?>/></label></td>
--->
 			</tr>
 			</tbody>
 		</table>
@@ -154,11 +126,11 @@ if($_SERVER['REQUEST_METHOD']=="POST"){//remember to kill formal beckmarks; init
 <div style="display" class="module_content">
 <fieldset style="width:48%; float:left; margin-right:3%;" >
 	<label>access latency</label>
-	<canvas id="chart1" style="height:200"></canvas>
+	<canvas id="chart1" style="height:90%; width:90%"></canvas>
 </fieldset>
 <fieldset style="width:48%; float:left;">
 	<label>memory usage</label>
-	<canvas id="chart2"></canvas>
+	<canvas id="chart2" style="height:90%; width:90%"></canvas>
 </fieldset>
 <div class="clear"></div>
 </div>
@@ -269,7 +241,7 @@ function clearBench(){
 			param += $(this).attr('name')[5];	
 	});*/
 	if($('#flag').val()!=''){
-	$.ajax({url:"per1.php",
+	$.ajax({url:"perf.php",
 		type:"POST",
 		data:{clear:$('#flag').val()},
 		dataType:"json"
@@ -278,7 +250,7 @@ function clearBench(){
 	}
 	$('select.choice').each(function(){$(this).val(0)});
 }
-/*window.onbeforeunload=clearBench();
+/*window.onbeforeunload=clearBench;
 window.onload = function(){
 	var xmlhttp = null;
 	try{
